@@ -59,6 +59,41 @@ router.route('/idea')
         res.send(err);
 
       res.json(ideas);
+    })
+  });
+
+// on routes that end in idea/:idea_id
+router.route('/idea/:idea_id')
+  // get the idea with the id (accessed at GET /api/idea/:idea_id)
+  .get(function(req, res) {
+    Idea.findById(req.param('idea_id'), function(err, idea) {
+      if (err) res.send(err);
+      res.json(idea);
+    })
+  })
+  //update the idea with this id (accessed at PUT /api/idea/:idea_id)
+  .put(function(req, res) {
+    //use the Idea model to find the idea that we want by the idea_id
+    Idea.findById(req.param('idea_id'), function(err, idea) {
+      if (err) res.send(err);
+
+      idea.title = req.param('title'); //update the title with one passed in
+
+      // now save the Idea with the new title
+      idea.save(function(err) {
+        if (err) res.send(err);
+        res.json({message: 'Idea updated!'});
+      });
+    });
+  })
+  // delete the idea with this id (accessed at DELETE /api/idea/:idea_id)
+  .delete(function(req, res) {
+    Idea.remove({
+      _id: req.param('idea_id')
+    }, function(err, idea) {
+      if (err) req.send(err);
+
+      res.json({message: 'Idea deleted!'});
     });
   });
 
